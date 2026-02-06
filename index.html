@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>InfoGram Business - Global Market</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- [비즈니스 테마 설정] --- */
+        :root {
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-main: #1a202c;
+            --text-sub: #718096;
+            --accent: #1e3a8a; /* Navy Blue (Trust) */
+            --highlight: #d97706; /* Gold (Wealth) */
+            --up-color: #ef4444; /* Stock Up (Korea style) */
+            --down-color: #3b82f6; /* Stock Down */
+            --header-height: 160px; /* 티커 포함 헤더 높이 */
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 80px;
+            overscroll-behavior-y: none;
+        }
+
+        /* --- [주가 티커 (Ticker)] --- */
+        .ticker-wrap {
+            position: fixed; top: 0; left: 0; width: 100%; height: 30px;
+            background: #0f172a; color: #fff; z-index: 2100;
+            overflow: hidden; line-height: 30px; font-size: 0.85rem;
+            border-bottom: 1px solid #334155;
+        }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 20s linear infinite; }
+        .ticker-item { display: inline-block; padding: 0 20px; }
+        .up { color: #f87171; } .down { color: #60a5fa; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* --- [헤더] --- */
+        header {
+            position: fixed; top: 30px; /* 티커 아래 */ left: 0; width: 100%; z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        
+        .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo-area { display: flex; align-items: center; gap: 8px; flex-shrink: 0; cursor: pointer; }
+        .logo-text { font-family: 'Georgia', serif; font-weight: 900; font-size: 1.4rem; letter-spacing: -0.5px; color: var(--accent); }
+        .category-badge {
+            background: var(--accent); color: #fff; padding: 3px 8px; 
+            border-radius: 2px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .notification-icon { position: relative; font-size: 1.4rem; color: var(--text-main); cursor: pointer; }
+        .notification-icon.alert { animation: bellShake 0.5s ease-in-out infinite; color: var(--highlight); }
+        .red-dot {
+            position: absolute; top: 0; right: 0; width: 8px; height: 8px; 
+            background: var(--highlight); border-radius: 50%; display: none;
+        }
+        @keyframes bellShake { 0% { transform: rotate(0); } 25% { transform: rotate(15deg); } 50% { transform: rotate(0); } 75% { transform: rotate(-15deg); } 100% { transform: rotate(0); } }
+
+        .lang-selector {
+            border: 1px solid #cbd5e0; padding: 4px 10px; border-radius: 4px;
+            background: #fff; font-size: 0.8rem; cursor: pointer; font-weight: 600; color: var(--text-main);
+        }
+
+        .search-container { width: 100%; position: relative; }
+        .search-input {
+            width: 100%; padding: 12px 15px 12px 40px; border-radius: 8px;
+            border: 1px solid #cbd5e0; background: #f8fafc; font-size: 0.95rem;
+            transition: 0.3s;
+        }
+        .search-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); outline: none; }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-sub); }
+
+        /* --- [고정형 플레이어 (Interactive)] --- */
+        #fixedPlayer {
+            position: fixed; top: 160px; /* 헤더 아래 */
+            left: 0; width: 100%; z-index: 1900;
+            background: #000; display: none;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+            transition: top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        #fixedPlayer.sticky-top { top: 0 !important; z-index: 2200; } /* 티커보다 위 */
+
+        .video-container { position: relative; width: 100%; padding-bottom: 56.25%; background: #000; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        .player-controls {
+            background: #111; color: #fff; padding: 12px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: grab; touch-action: none; border-top: 1px solid #333;
+        }
+        .player-info { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .player-handle { width: 40px; height: 4px; background: #555; border-radius: 2px; margin-bottom: 5px; }
+        .player-title { font-size: 0.9rem; font-weight: 500; color: #ccc; }
+        .close-player-btn { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
+
+        /* --- [AI 결과 박스] --- */
+        .ai-result-box {
+            max-width: 600px; margin: 160px auto 0; padding: 0;
+            background: #fff; border-radius: 8px; border: 1px solid #e2e8f0;
+            display: none; overflow: hidden; margin-bottom: 20px;
+        }
+        .ai-header-area {
+            padding: 12px 20px; border-bottom: 1px solid #f1f5f9;
+            background: linear-gradient(to right, #f8fafc, #fff);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .ai-icon-circle { 
+            width: 24px; height: 24px; background: var(--accent); color: #fff; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; 
+        }
+        .ai-title { font-weight: 700; color: var(--accent); font-size: 0.95rem; }
+        .ai-image-gen img { width: 100%; height: 200px; object-fit: cover; }
+        .ai-body { padding: 20px; font-size: 0.95rem; line-height: 1.6; color: #334155; }
+        .sentiment-tag { display: inline-block; padding: 2px 8px; background: #dbeafe; color: var(--accent); border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-top: 10px; }
+
+        /* --- [피드 리스트] --- */
+        .feed-container { 
+            max-width: 600px; margin: 160px auto 0; /* 헤더 높이만큼 */
+            min-height: 100vh; padding: 0 10px; 
+            transition: margin-top 0.3s ease;
+        }
+        .card {
+            background: var(--card-bg); border: 1px solid #e2e8f0; border-radius: 8px;
+            overflow: hidden; margin-bottom: 20px; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .card:active { transform: scale(0.99); background: #f8fafc; }
+        
+        .card-header { padding: 12px 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f1f5f9; }
+        .source-icon { width: 28px; height: 28px; border-radius: 4px; object-fit: cover; }
+        .source-name { font-weight: 700; font-size: 13px; color: #475569; text-transform: uppercase; }
+        .time-stamp { font-size: 12px; color: #94a3b8; margin-left: auto; }
+        
+        .card-media { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
+        .card-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        
+        .card-body { padding: 15px; }
+        .card-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; line-height: 1.4; color: #0f172a; font-family: 'Georgia', serif; }
+        .card-desc { font-size: 0.9rem; color: #64748b; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    </style>
+</head>
+<body>
+
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <span class="ticker-item">NASDAQ <span class="up">▲ 18,450.20 (+1.2%)</span></span>
+            <span class="ticker-item">S&P 500 <span class="down">▼ 5,210.50 (-0.3%)</span></span>
+            <span class="ticker-item">KOSPI <span class="up">▲ 2,850.10 (+0.8%)</span></span>
+            <span class="ticker-item">BTC/USD <span class="up">▲ $98,200 (+2.5%)</span></span>
+            <span class="ticker-item">USD/KRW <span class="down">▼ 1,320.50 (-0.1%)</span></span>
+            <span class="ticker-item">AAPL <span class="up">▲ $245.00</span></span>
+            <span class="ticker-item">TSLA <span class="down">▼ $198.50</span></span>
+        </div>
+    </div>
+
+    <header id="mainHeader">
+        <div class="header-top">
+            <div class="logo-area" onclick="location.reload()">
+                <i class="fas fa-chart-line" style="color:var(--accent); font-size: 1.4rem;"></i>
+                <span class="logo-text">InfoGram</span>
+                <span class="category-badge">Business</span>
+            </div>
+            
+            <div class="header-actions">
+                <div class="notification-icon" id="bellIcon" onclick="applyRealUpdate()">
+                    <i class="far fa-bell"></i>
+                    <div class="red-dot" id="notiDot"></div>
+                </div>
+                <select class="lang-selector" id="langSelect" onchange="changeLanguage()">
+                    <option value="ko">KR</option>
+                    <option value="en">EN</option>
+                    <option value="jp">JP</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search (Stock, Economy, Fed)..." onkeyup="handleSearch(event)">
+        </div>
+    </header>
+
+    <div id="fixedPlayer">
+        <div class="video-container" id="playerFrameArea"></div>
+        <div class="player-controls" id="playerControls">
+            <div class="player-info">
+                <div class="player-handle"></div>
+                <span class="player-title" id="playerTitle">Select a video</span>
+            </div>
+            <button class="close-player-btn" onclick="closePlayer()"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <div id="aiResult" class="ai-result-box">
+        <div class="ai-header-area">
+            <div class="ai-icon-circle"><i class="fas fa-robot"></i></div>
+            <span class="ai-title" id="aiTitle">AI Market Analyst</span>
+        </div>
+        <div class="ai-image-gen" id="aiImageArea">
+            <img id="aiGeneratedImg" src="" alt="Market Chart">
+        </div>
+        <div class="ai-body" id="aiContent"></div>
+    </div>
+
+    <div class="feed-container" id="feedContainer"></div>
+
+    <script>
+        const YOUTUBE_API_KEY = 'AIzaSyBlKZbCP6qZiv3NLBmgh4iled9Y4BmCUM8'; 
+        const API_URL = 'https://www.googleapis.com/youtube/v3/search';
+        let currentLang = 'ko';
+        let lastQuery = '';
+
+        // --- 1. 검색 및 AI (비즈니스 특화) ---
+        async function handleSearch(e) {
+            if (e.key === 'Enter' || e.type === 'click') {
+                const query = document.getElementById('searchInput').value;
+                if (!query) return;
+                lastQuery = query;
+
+                closePlayer(); 
+                document.getElementById('feedContainer').style.marginTop = '160px'; 
+                
+                resetUI(query);
+                generateAIAnalysis(query);
+                await searchYouTubeReal(query);
+            }
+        }
+
+        function resetUI(query) {
+            document.getElementById('aiResult').style.display = 'block';
+            document.getElementById('aiImageArea').style.display = 'none';
+            document.getElementById('aiTitle').innerText = `Analyzing Market Data: '${query}'...`;
+            document.getElementById('aiContent').innerText = '';
+            document.getElementById('feedContainer').innerHTML = `<div style="text-align:center; padding:30px; color:#888;"><i class="fas fa-spinner fa-spin"></i> Searching Global Markets...</div>`;
+        }
+
+        function generateAIAnalysis(query) {
+            // 이미지 생성 (차트, 금융 느낌)
+            const imgArea = document.getElementById('aiImageArea');
+            const imgTag = document.getElementById('aiGeneratedImg');
+            const encodedQuery = encodeURIComponent(query + " financial stock market chart professional");
+            imgTag.src = `https://image.pollinations.ai/prompt/${encodedQuery}?width=800&height=300&nologo=true`;
+            imgTag.onload = () => { imgArea.style.display = 'block'; };
+
+            setTimeout(() => {
+                const content = document.getElementById('aiContent');
+                const now = new Date();
+                const dateStr = `${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()}`;
+                
+                let sentiment = "Neutral";
+                if(query.match(/up|bull|growth|상승/i)) sentiment = "Bullish (매수 우위)";
+                else if(query.match(/down|bear|crisis|하락/i)) sentiment = "Bearish (매도 우위)";
+
+                let text = "";
+                if (currentLang === 'ko') {
+                    document.getElementById('aiTitle').innerText = `AI 마켓 인사이트`;
+                    text = `<strong>📅 ${dateStr} 시장 분석</strong><br><b>${query}</b> 관련 글로벌 자금 흐름이 감지되었습니다.<br><br><span class='sentiment-tag'>시장 심리: ${sentiment}</span><br><br>하단 영상을 통해 월가(Wall St.)의 최신 리포트를 확인하세요.`;
+                } else {
+                    document.getElementById('aiTitle').innerText = `AI Market Insight`;
+                    text = `<strong>📅 Market Outlook (${dateStr})</strong><br>Significant capital flow detected regarding <b>${query}</b>.<br><br><span class='sentiment-tag'>Market Sentiment: ${sentiment}</span><br><br>Check the latest Wall St. reports below.`;
+                }
+                content.innerHTML = text;
+            }, 1000);
+        }
+
+        // --- 2. 유튜브 API ---
+        async function searchYouTubeReal(query) {
+            try {
+                // 비즈니스 관련 영상 우선 검색을 위해 'news', 'stock' 등 키워드 조합 가능
+                const url = `${API_URL}?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+                renderFeed(data.items);
+            } catch (error) {
+                console.warn("API Error:", error);
+                renderFeed([]); 
+            }
+        }
+
+        function renderFeed(items, prepend = false) {
+            const container = document.getElementById('feedContainer');
+            if(!prepend) container.innerHTML = ''; 
+
+            if(!items || items.length === 0) {
+                if(!prepend) container.innerHTML = '<div style="text-align:center; padding:20px;">No market data found.</div>';
+                return;
+            }
+
+            items.forEach(item => {
+                const videoId = item.id.videoId || 'HK6y8DAPN_0'; 
+                const title = item.snippet.title;
+                const desc = item.snippet.description;
+                const thumbnail = item.snippet.thumbnails.medium.url;
+                const channel = item.snippet.channelTitle;
+                const badge = prepend ? `<div class="card-new-badge" style="background:#ef4444;">BREAKING</div>` : '';
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.setAttribute('onclick', `playVideo('${videoId}', "${escapeHtml(title)}")`);
+                
+                card.innerHTML = `
+                    ${badge}
+                    <div class="card-header">
+                        <img src="https://ui-avatars.com/api/?name=${channel.substring(0,2)}&background=1e3a8a&color=fff" class="source-icon">
+                        <div class="source-info"><div class="source-name">${channel}</div></div>
+                        <div class="time-stamp">Today</div>
+                    </div>
+                    <div class="card-media">
+                        <img src="${thumbnail}" alt="Thumbnail">
+                        <i class="fas fa-play-circle" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:50px; color:rgba(255,255,255,0.9);"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">${title}</div>
+                        <div class="card-desc">${desc}</div>
+                    </div>
+                `;
+                
+                if(prepend) container.prepend(card);
+                else container.appendChild(card);
+            });
+        }
+
+        // --- 3. 인터랙티브 플레이어 로직 ---
+        function playVideo(videoId, title) {
+            const player = document.getElementById('fixedPlayer');
+            const frameArea = document.getElementById('playerFrameArea');
+            const feed = document.getElementById('feedContainer');
+            const aiBox = document.getElementById('aiResult');
+            const header = document.getElementById('mainHeader');
+
+            player.style.display = 'block';
+            player.classList.remove('sticky-top'); // 헤더 아래 시작
+            document.getElementById('playerTitle').innerText = title;
+
+            frameArea.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1&rel=0&controls=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+
+            // 레이아웃 밀기 (헤더 160 + 플레이어 높이 + 여백)
+            const offset = 160 + player.offsetHeight + 20;
+            feed.style.marginTop = `${offset}px`; 
+            if(aiBox.style.display === 'block') aiBox.style.marginTop = `${offset}px`;
+            
+            player.style.top = `160px`; // 헤더 높이
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closePlayer() {
+            const player = document.getElementById('fixedPlayer');
+            const feed = document.getElementById('feedContainer');
+            const aiBox = document.getElementById('aiResult');
+
+            document.getElementById('playerFrameArea').innerHTML = '';
+            player.style.display = 'none';
+            player.classList.remove('sticky-top');
+
+            feed.style.marginTop = '160px'; 
+            aiBox.style.marginTop = '160px';
+        }
+
+        // [제스처 & 스크롤]
+        const controls = document.getElementById('playerControls');
+        let startY = 0;
+
+        controls.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, {passive: true});
+        controls.addEventListener('touchend', e => {
+            const endY = e.changedTouches[0].clientY;
+            const diff = startY - endY;
+            const player = document.getElementById('fixedPlayer');
+
+            if (diff > 50) player.classList.add('sticky-top');
+            else if (diff < -50) player.classList.remove('sticky-top');
+        }, {passive: true});
+
+        window.addEventListener('scroll', () => {
+            const player = document.getElementById('fixedPlayer');
+            if(player.style.display !== 'block') return;
+            // 스크롤 시 자동 상단 고정
+            if (window.scrollY > 100) player.classList.add('sticky-top');
+            else if (window.scrollY < 10) player.classList.remove('sticky-top');
+        });
+
+        // --- 4. 기타 유틸 ---
+        function changeLanguage() {
+            currentLang = document.getElementById('langSelect').value;
+            const searchInput = document.getElementById('searchInput');
+            searchInput.placeholder = currentLang === 'ko' ? "종목명, 경제 이슈 검색..." : "Search Stock, Economy...";
+            if(lastQuery) generateAIAnalysis(lastQuery);
+        }
+
+        function applyRealUpdate() {
+            const bell = document.getElementById('bellIcon');
+            const dot = document.getElementById('notiDot');
+            bell.classList.remove('alert');
+            dot.style.display = 'none';
+            
+            const mockItem = {
+                id: { videoId: 'HK6y8DAPN_0' },
+                snippet: {
+                    title: currentLang === 'ko' ? "🔴 [속보] 연준(Fed) 금리 결정 발표" : "🔴 [BREAKING] Fed Interest Rate Decision",
+                    description: "Global market reaction live.",
+                    thumbnails: { medium: { url: "https://images.unsplash.com/photo-1611974765270-ca1258634369?auto=format&fit=crop&q=80&w=800" } },
+                    channelTitle: "CNBC",
+                    publishedAt: new Date().toISOString()
+                }
+            };
+            renderFeed([mockItem], true); 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        setInterval(() => {
+            const bell = document.getElementById('bellIcon');
+            const dot = document.getElementById('notiDot');
+            bell.classList.add('alert');
+            dot.style.display = 'block';
+            setTimeout(() => { bell.classList.remove('alert'); }, 3000);
+        }, 20000);
+
+        function escapeHtml(text) { return text ? text.replace(/['"]/g, "") : ""; }
+
+        // 초기 실행
+        searchYouTubeReal("Global Economy 2026");
+    </script>
+</body>
+</html>
