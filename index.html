@@ -2,632 +2,402 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InfoGram - Business & Economy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>InfoGram Biz</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ffffff">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- [Business Theme] --- */
         :root {
-            --bg-color: #f4f6f8;
+            --bg-color: #f8f9fa;
             --card-bg: #ffffff;
-            --text-main: #1a202c;
-            --text-sub: #718096;
-            --accent: #1e3a8a; /* Navy Blue */
-            --biz-gradient: linear-gradient(135deg, #1e3a8a 0%, #d97706 100%); /* Navy to Gold */
-            --story-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-            --header-offset: 185px; /* Ticker(30) + Header(155) */
+            --text-main: #212529;
+            --text-sub: #868e96;
+            --accent: #2980b9; /* 비즈니스 블루 */
+            --header-height: 145px; 
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Outfit', "Noto Sans SC", sans-serif;
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             padding-bottom: 70px;
             overscroll-behavior-y: none;
         }
 
-        /* --- [Ticker] --- */
+        /* [Ticker] */
         .ticker-wrap {
             position: fixed; top: 0; left: 0; width: 100%; height: 30px;
-            background: #0f172a; color: #fff; z-index: 2100;
+            background: #111; color: #fff; z-index: 2000;
             overflow: hidden; line-height: 30px; font-size: 0.8rem;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid #333;
         }
-        .ticker { display: inline-block; white-space: nowrap; animation: ticker 30s linear infinite; }
-        .ticker-item { display: inline-block; padding: 0 20px; }
-        .up { color: #f87171; } .down { color: #60a5fa; }
+        .ticker { display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite; }
+        .ticker-item { display: inline-block; padding: 0 15px; border-right: 1px solid #333; }
+        .up { color: #ff5252; font-weight: bold; } 
+        .down { color: #448aff; font-weight: bold; }
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* --- [Header] --- */
+        /* [Header] */
         header {
-            position: fixed; top: 30px; /* Ticker 아래 */ left: 0; width: 100%; z-index: 2000;
+            position: fixed; top: 30px; left: 0; width: 100%; z-index: 1900;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid #e2e8f0;
-            display: flex; flex-direction: column; align-items: center;
+            border-bottom: 1px solid #e9ecef;
+            height: 115px; 
+            display: flex; flex-direction: column; justify-content: space-between;
         }
-        
-        .header-inner { width: 100%; max-width: 1400px; }
 
         .header-top {
-            padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 15px; 
+            display: flex; align-items: center; gap: 10px;
         }
         
-        .logo-area { display: flex; align-items: center; gap: 6px; cursor: pointer; }
-        .logo-icon {
-            font-size: 1.2rem; background: var(--biz-gradient);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .logo-text { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; color: #1a202c; }
-        .category-badge {
-            background: var(--biz-gradient); color: #fff; padding: 2px 6px; 
-            border-radius: 4px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase;
+        /* 로고 */
+        .logo-area { display: flex; align-items: center; gap: 2px; cursor: pointer; flex-shrink: 0; }
+        .logo-main { font-size: 1.3rem; font-weight: 900; color: #222; letter-spacing: -0.5px; }
+        .logo-accent { color: var(--accent); } 
+        .logo-sub { font-size: 1.3rem; font-weight: 300; color: #555; }
+
+        /* [Search Wrapper] - 둥근 알약 스타일 */
+        .search-wrapper {
+            flex: 1; display: flex; align-items: center;
+            background: #f1f3f5; 
+            border-radius: 50px; /* ★전체 둥글게 */
+            border: 2px solid #e9ecef;
+            padding: 4px; /* 내부 여백 */
+            height: 48px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        .header-actions { display: flex; align-items: center; gap: 10px; }
-        .notification-wrap { position: relative; font-size: 20px; color: #374151; cursor: pointer; }
-        .notification-wrap.alert { animation: bellShake 0.5s ease-in-out infinite; color: #d97706; }
-        .red-dot {
-            position: absolute; top: 0; right: 0; width: 7px; height: 7px;
-            background: #d97706; border-radius: 50%; border: 1px solid #fff; display: none;
+        /* 언어 선택 */
+        .lang-select {
+            border: none; background: transparent; font-size: 0.9rem; font-weight: 700;
+            color: #333; outline: none; padding-left: 10px; cursor: pointer;
+            border-right: 1px solid #ddd; height: 24px; margin-right: 10px;
+            font-family: "Noto Color Emoji", 'Outfit', sans-serif;
+            min-width: 80px; /* 글자 안 잘리게 */
         }
-        @keyframes bellShake { 0% { transform: rotate(0); } 25% { transform: rotate(15deg); } 50% { transform: rotate(0); } 75% { transform: rotate(-15deg); } 100% { transform: rotate(0); } }
 
-        .lang-selector {
-            border: 1px solid #cbd5e0; padding: 4px 8px; border-radius: 6px;
-            background: #fff; font-size: 0.75rem; font-weight: 700; color: #374151;
-            cursor: pointer; outline: none; transition: 0.2s;
-        }
-        .lang-selector:hover { border-color: var(--accent); color: var(--accent); }
-
-        /* 스토리 */
-        .stories-container {
-            width: 100%; border-bottom: 1px solid #e2e8f0; background: #fff;
-            display: flex; justify-content: center;
-        }
-        .story-scroll-view {
-            width: 100%; max-width: 1400px;
-            overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none;
-            padding: 10px 0;
-        }
-        .story-scroll-view::-webkit-scrollbar { display: none; }
-
-        .story-wrapper { display: inline-flex; gap: 14px; padding: 0 15px; }
-        .story-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.1s; }
-        .story-item:hover { transform: translateY(-3px); }
-        
-        .story-ring {
-            width: 56px; height: 56px; border-radius: 50%; padding: 2px;
-            background: var(--story-gradient); display: flex; align-items: center; justify-content: center;
-        }
-        .story-ring.news { background: linear-gradient(135deg, #10b981, #059669); } 
-        .story-ring.tech { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
-        .story-ring.biz { background: linear-gradient(135deg, #1e3a8a, #d97706); }
-        .story-ring.coin { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
-        .story-ring.video { background: linear-gradient(135deg, #ef4444, #f97316); }
-        
-        .story-img {
-            width: 50px; height: 50px; background: #fff; border-radius: 50%; border: 2px solid #fff;
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
-        }
-        .story-name { font-size: 10px; margin-top: 4px; font-weight: 600; color: #4b5563; }
-
-        /* 검색창 */
-        .search-area { width: 100%; padding: 5px 15px 10px 15px; }
         .search-input {
-            width: 100%; padding: 8px 12px; border-radius: 10px; border: 1px solid #cbd5e0;
-            background: #f8fafc; font-size: 0.9rem; outline: none; transition: 0.3s;
-        }
-        .search-input:focus { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); }
-
-        /* --- [Layout Grid] --- */
-        .main-layout {
-            max-width: 1400px; margin: var(--header-offset) auto 0; padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr 320px; 
-            gap: 30px;
-            min-height: 100vh;
+            flex: 1; border: none; background: transparent;
+            padding: 0; font-size: 0.95rem; outline: none;
+            color: #333; min-width: 0; 
         }
 
-        /* --- [Left: Feed] --- */
-        .feed-section { width: 100%; }
-        .feed-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 25px; 
+        /* ★ 검색 버튼: 완벽한 원형 ★ */
+        .search-btn { 
+            border: none; 
+            background: var(--accent); /* 파란색 */
+            color: #fff; 
+            width: 40px; height: 40px; /* 정사각형 크기 */
+            border-radius: 50%; /* ★완전 동그라미 */
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
         }
+        .search-btn:active { transform: scale(0.9); }
+        .search-btn i { font-size: 1.1rem; }
+
+
+        /* [Menu] */
+        .nav-scroller {
+            width: 100%; overflow-x: auto; white-space: nowrap;
+            padding: 0 15px 10px 15px; scrollbar-width: none;
+        }
+        .nav-scroller::-webkit-scrollbar { display: none; }
+        .nav-chips { display: inline-flex; gap: 8px; }
+        .chip {
+            padding: 6px 14px; border-radius: 20px; background: #fff;
+            border: 1px solid #dee2e6; color: #495057; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; transition: 0.2s;
+        }
+        .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        /* [Video Player] */
+        #video-container {
+            margin-top: 145px; width: 100%; background: #000;
+            display: none; z-index: 3000;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        #video-container.sticky {
+            position: fixed; top: 0; left: 0; width: 100%; margin-top: 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .video-frame-wrap { position: relative; width: 100%; padding-bottom: 56.25%; }
+        .video-frame-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
-        .card {
-            background: var(--card-bg); border: 1px solid #e2e8f0; border-radius: 12px;
-            cursor: pointer; overflow: hidden; height: 100%; display: flex; flex-direction: column;
-            transition: transform 0.3s, box-shadow 0.3s;
+        .player-ctrl {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 15px; background: #222; color: #fff;
         }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-        .card-header { padding: 12px 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f1f5f9; }
-        .source-icon { width: 32px; height: 32px; border-radius: 8px; background: #1e3a8a; object-fit: cover; }
-        .source-name { font-weight: 700; font-size: 13px; color: #1e3a8a; text-transform: uppercase; }
-        .card-media { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
-        .card-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
-        .card-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
-        .card-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; line-height: 1.4; color: #1a202c; }
-        .card-desc { font-size: 0.9rem; color: #64748b; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.6; }
-        .card-actions { margin-top: auto; padding-top: 15px; display: flex; gap: 15px; font-size: 20px; color: #94a3b8; }
+        .video-info-text { font-size: 0.85rem; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%; }
+        .close-btn { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
 
-        /* --- [Right: Sidebar (History)] --- */
-        .sidebar-section { position: relative; }
-        .history-box {
-            position: sticky; top: 200px; 
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
-            padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            max-height: calc(100vh - 220px); overflow-y: auto;
+        /* [Main Feed] */
+        .content-area {
+            max-width: 800px; margin: 0 auto; padding: 20px 15px;
+            margin-top: 145px; 
         }
-        .history-title { font-weight: 800; font-size: 1rem; margin-bottom: 15px; color: #1e3a8a; display: flex; justify-content: space-between; align-items: center; }
-        .clear-btn { font-size: 0.75rem; color: #ef4444; cursor: pointer; }
-        .history-item { display: flex; gap: 10px; margin-bottom: 15px; cursor: pointer; transition: 0.2s; }
-        .history-item:hover { opacity: 0.7; }
-        .h-thumb { width: 80px; height: 45px; border-radius: 6px; object-fit: cover; background: #eee; flex-shrink: 0; }
-        .h-info { display: flex; flex-direction: column; justify-content: center; }
-        .h-title { font-size: 0.8rem; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .h-channel { font-size: 0.7rem; color: #888; margin-top: 2px; }
-        .empty-history { text-align: center; color: #999; font-size: 0.85rem; padding: 20px 0; }
+        .content-area.has-video { margin-top: 0; }
 
-        /* --- [Player] --- */
-        #fixedPlayer {
-            position: fixed; top: var(--header-offset); left: 0; width: 100%; z-index: 1900;
-            background: rgba(0,0,0,0.8); display: none; transition: top 0.3s;
+        .news-card {
+            background: var(--card-bg); border-radius: 12px; overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;
+            cursor: pointer; border: 1px solid #f1f3f5;
         }
-        #fixedPlayer.sticky-top { top: 30px !important; z-index: 2100; background: #000; } 
-        .player-content-wrapper { max-width: 800px; margin: 0 auto; background: #000; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        #fixedPlayer.sticky-top .player-content-wrapper { max-width: 100%; }
-        .video-container { position: relative; width: 100%; padding-bottom: 56.25%; background: #000; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .player-controls { background: #111; color: #fff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .close-player-btn { background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; }
-
-        /* --- [AI Result] --- */
-        .ai-result-box { width: 100%; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; display: none; overflow: hidden; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(30, 58, 138, 0.1); }
-        .ai-header-area { padding: 12px 15px; background: linear-gradient(to right, #f8fafc, #fff); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f1f5f9; }
-        .ai-loader { width: 18px; height: 18px; border: 2px solid #eee; border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .ai-image-gen img { width: 100%; height: 250px; object-fit: cover; display: none; }
-        .ai-body { padding: 15px; font-size: 0.95rem; line-height: 1.6; color: #334155; }
-
-        /* 페이지네이션 */
-        .pagination-container { display: flex; justify-content: center; gap: 8px; margin: 30px 0 80px 0; }
-        .page-btn { width: 40px; height: 40px; border-radius: 10px; background: #fff; border: 1px solid #cbd5e0; display: flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
-        .page-btn:hover { background: #f1f5f9; }
-        .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-        /* [하단 탭] - 간격 및 중앙 정렬 최적화 */
-        .bottom-nav { 
-            position: fixed; bottom: 0; width: 100%; height: 55px; 
-            background: rgba(255,255,255,0.95); border-top: 1px solid #e2e8f0; 
-            backdrop-filter: blur(10px); 
-            display: flex; justify-content: center; /* 중앙 정렬 */
-            align-items: center; z-index: 1000; 
+        .thumb-box { position: relative; width: 100%; aspect-ratio: 16/9; }
+        .thumb-img { width: 100%; height: 100%; object-fit: cover; }
+        .play-icon-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 3rem; color: rgba(255,255,255,0.8); pointer-events: none;
         }
-        .nav-inner { 
-            max-width: 600px; width: 100%; 
-            display: flex; justify-content: space-around; /* 균등 분배 */
-        }
-        .nav-item { font-size: 20px; color: #94a3b8; cursor: pointer; transition: 0.2s; }
-        .nav-item.active { color: var(--accent); transform: scale(1.1); }
+        .card-body { padding: 15px; }
+        .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; line-height: 1.4; color: #212529; }
+        .card-meta { font-size: 0.75rem; color: #868e96; display: flex; justify-content: space-between; }
 
-        /* [모바일 대응] */
-        @media (max-width: 1000px) {
-            .main-layout { grid-template-columns: 1fr; margin-top: var(--header-offset); padding: 0 10px; }
-            .sidebar-section { display: none; } 
-            .feed-grid { grid-template-columns: 1fr; }
-            #fixedPlayer { top: var(--header-offset); }
-            .player-content-wrapper { max-width: 100%; }
-            .card { border-radius: 12px; margin-bottom: 20px; }
+        /* [Bottom Nav] */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
+            background: #fff; border-top: 1px solid #e9ecef;
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 4000;
         }
+        .bn-item { display: flex; flex-direction: column; align-items: center; color: #adb5bd; font-size: 0.7rem; cursor: pointer; }
+        .bn-item i { font-size: 1.3rem; margin-bottom: 3px; }
+        .bn-item.active { color: var(--accent); font-weight: bold; }
+
     </style>
 </head>
 <body>
 
     <div class="ticker-wrap">
-        <div class="ticker">
-            <span class="ticker-item">NASDAQ <span class="up">▲ 18,450.20 (+1.2%)</span></span>
-            <span class="ticker-item">S&P 500 <span class="down">▼ 5,210.50 (-0.3%)</span></span>
-            <span class="ticker-item">KOSPI <span class="up">▲ 2,850.10 (+0.8%)</span></span>
-            <span class="ticker-item">BTC/USD <span class="up">▲ $98,200 (+2.5%)</span></span>
-            <span class="ticker-item">USD/KRW <span class="down">▼ 1,320.50 (-0.1%)</span></span>
-            <span class="ticker-item">Gold <span class="up">▲ $2,450.00</span></span>
-            <span class="ticker-item">NVDA <span class="up">▲ $950.20</span></span>
-            <span class="ticker-item">TSLA <span class="down">▼ $175.50</span></span>
+        <div class="ticker" id="tickerList">
+            <span class="ticker-item">Loading Ticker...</span>
         </div>
     </div>
 
     <header id="mainHeader">
-        <div class="header-inner">
-            <div class="header-top">
-                <div class="logo-area" onclick="location.href='https://minetia.github.io/Home/'">
-                    <i class="fas fa-chart-line logo-icon"></i>
-                    <span class="logo-text">InfoGram</span>
-                    <span class="category-badge">Business</span>
-                </div>
-                
-                <div class="header-actions">
-                    <div class="notification-wrap" id="bellIcon" onclick="updateData()">
-                        <i class="far fa-bell"></i>
-                        <div class="red-dot" id="notiDot"></div>
-                    </div>
-                    <select class="lang-selector" id="langSelect" onchange="changeLanguage()">
-                        <option value="ko">KR</option>
-                        <option value="en">EN</option>
-                        <option value="jp">JP</option>
-                        <option value="zh">CN</option>
-                    </select>
-                </div>
+        <div class="header-top">
+            <div class="logo-area" onclick="location.reload()">
+                <span class="logo-main"><span class="logo-accent">Info</span>Gram</span>
+                <span class="logo-sub">Biz</span>
             </div>
             
-            <div class="stories-container">
-                <div class="story-scroll-view">
-                    <div class="story-wrapper">
-                        <div class="story-item" onclick="location.href='https://minetia.github.io/News/'">
-                            <div class="story-ring news"><div class="story-img">📰</div></div>
-                            <div class="story-name">News</div>
-                        </div>
-                        <div class="story-item" onclick="location.href='https://minetia.github.io/tech/'">
-                            <div class="story-ring tech"><div class="story-img">💻</div></div>
-                            <div class="story-name">Tech</div>
-                        </div>
-                        <div class="story-item" onclick="location.reload()">
-                            <div class="story-ring biz"><div class="story-img">💰</div></div>
-                            <div class="story-name">Business</div>
-                        </div>
-                        <div class="story-item" onclick="location.href='https://minetia.github.io/coin/'">
-                            <div class="story-ring coin"><div class="story-img">🪙</div></div>
-                            <div class="story-name">Crypto</div>
-                        </div>
-                        <div class="story-item" onclick="location.href='https://minetia.github.io/video/'">
-                            <div class="story-ring video"><div class="story-img">🎬</div></div>
-                            <div class="story-name">Video</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="search-wrapper">
+                <select class="lang-select" id="langSelect" onchange="changeCountry()">
+                    <option value="KR">🇰🇷 KR</option>
+                    <option value="US">🇺🇸 US</option>
+                    <option value="JP">🇯🇵 JP</option>
+                    <option value="CN">🇨🇳 CN</option>
+                    <option value="VN">🇻🇳 VN</option>
+                    <option value="TH">🇹🇭 TH</option>
+                    <option value="ID">🇮🇩 ID</option>
+                    <option value="IN">🇮🇳 IN</option>
+                    <option value="FR">🇫🇷 FR</option>
+                    <option value="DE">🇩🇪 DE</option>
+                    <option value="ES">🇪🇸 ES</option>
+                    <option value="PT">🇧🇷 PT</option>
+                    <option value="RU">🇷🇺 RU</option>
+                    <option value="SA">🇸🇦 SA</option>
+                </select>
+                <input type="text" class="search-input" id="searchInput" placeholder="종목, 경제 검색..." onkeyup="handleSearch(event)">
+                
+                <button class="search-btn" onclick="triggerSearch()"><i class="fas fa-search"></i></button>
             </div>
-
-            <div class="search-area">
-                <input type="text" class="search-input" id="searchInput" placeholder="Search Stocks, Economy, Fed..." onkeyup="handleSearch(event)">
-            </div>
+        </div>
+        
+        <div class="nav-scroller">
+            <div class="nav-chips" id="menuList"></div>
         </div>
     </header>
 
-    <div id="fixedPlayer">
-        <div class="player-content-wrapper">
-            <div class="video-container" id="playerFrameArea"></div>
-            <div class="player-controls">
-                <span style="font-size:12px; font-weight:700; color:#fff;" id="nowPlayingText">NOW PLAYING</span>
-                <button class="close-player-btn" onclick="closePlayer()"><i class="fas fa-times"></i></button>
-            </div>
+    <div id="video-container">
+        <div class="video-frame-wrap" id="playerFrameArea"></div>
+        <div class="player-ctrl">
+            <span class="video-info-text" id="playingTitle">Playing...</span>
+            <button class="close-btn" onclick="closePlayer()"><i class="fas fa-times"></i></button>
         </div>
     </div>
 
-    <div class="main-layout">
-        
-        <main class="feed-section">
-            <div id="aiResult" class="ai-result-box">
-                <div class="ai-header-area">
-                    <div class="ai-loader" id="aiLoader"></div>
-                    <span style="font-weight:700; color:#1e3a8a; font-size:0.9rem;" id="aiTitle">AI Analyst...</span>
-                </div>
-                <div class="ai-image-gen" id="aiImageArea">
-                    <img id="aiGeneratedImg" src="" alt="AI Gen">
-                </div>
-                <div class="ai-body" id="aiContent"></div>
-            </div>
-
-            <div class="feed-grid" id="feedContainer"></div>
-            <div class="pagination-container" id="paginationContainer"></div>
-        </main>
-
-        <aside class="sidebar-section">
-            <div class="history-box">
-                <div class="history-title">
-                    <span>🕒 History</span>
-                    <span class="clear-btn" onclick="clearHistory()">Clear</span>
-                </div>
-                <div id="historyList">
-                    <div class="empty-history">최근 본 영상이 없습니다.</div>
-                </div>
-            </div>
-        </aside>
-
+    <div class="content-area" id="mainFeed">
+        <div id="feedList"></div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-inner">
-            <div class="nav-item" onclick="location.href='https://minetia.github.io/Home/'"><i class="fas fa-home"></i></div>
-            
-            <div class="nav-item active"><i class="fas fa-chart-line"></i></div>
-            
-            <div class="nav-item"><i class="far fa-plus-square"></i></div>
-            
-            <div class="nav-item" onclick="location.href='https://minetia.github.io/video/'"><i class="fas fa-video"></i></div>
-        </div>
+        <div class="bn-item" onclick="goLink('https://minetia.github.io/Home/')"><i class="fas fa-home"></i>홈</div>
+        <div class="bn-item active" onclick="goLink('https://minetia.github.io/business/')"><i class="fas fa-briefcase"></i>Biz</div>
+        <div class="bn-item" onclick="goLink('https://minetia.github.io/tech/')"><i class="fas fa-microchip"></i>테크</div>
+        <div class="bn-item" onclick="goLink('https://minetia.github.io/coin/')"><i class="fab fa-bitcoin"></i>코인</div>
+        <div class="bn-item" onclick="goLink('https://minetia.github.io/News/')"><i class="fas fa-newspaper"></i>뉴스</div>
     </div>
 
     <script>
+        function goLink(url) { window.location.replace(url); }
+
         const YOUTUBE_API_KEY = 'AIzaSyBlKZbCP6qZiv3NLBmgh4iled9Y4BmCUM8'; 
         const API_URL = 'https://www.googleapis.com/youtube/v3/search';
         
-        const TOTAL_ITEMS = 40;
-        const ITEMS_PER_PAGE = 12; // Grid Mode
-        let allData = [];
-        let currentPage = 1;
-        let currentLang = 'ko'; 
+        let isPlayerActive = false;
+        let currentCountry = 'KR';
 
-        // --- 1. 검색 및 AI ---
-        async function handleSearch(e) {
-            if (e.key === 'Enter') {
-                const query = document.getElementById('searchInput').value;
-                if (!query) return;
+        // [티커: 코인(실시간) + 주식(랜덤)]
+        async function updateTicker() {
+            try {
+                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT"]');
+                const data = await res.json();
+                const btc = parseFloat(data[0].price).toFixed(0);
+                const eth = parseFloat(data[1].price).toFixed(0);
                 
-                closePlayer();
-                document.getElementById('aiResult').style.display = 'block';
-                
-                resetAI(query);
-                generateAI(query);
-                await searchYouTubeReal(query);
+                const nasdaq = (18500 + Math.random() * 50).toFixed(2);
+                const sp500 = (5800 + Math.random() * 20).toFixed(2);
+                const krw = (1380 + Math.random() * 5).toFixed(1);
+
+                const html = `
+                    <span class="ticker-item">BTC <span class="up">$${btc}</span></span>
+                    <span class="ticker-item">ETH <span class="down">$${eth}</span></span>
+                    <span class="ticker-item">NASDAQ <span class="up">▲${nasdaq}</span></span>
+                    <span class="ticker-item">S&P500 <span class="up">▲${sp500}</span></span>
+                    <span class="ticker-item">USD/KRW <span class="down">▼${krw}</span></span>
+                `;
+                document.getElementById('tickerList').innerHTML = html;
+            } catch (e) {
+                console.log("Ticker Error");
             }
         }
+        setInterval(updateTicker, 2000);
+        updateTicker();
 
-        function resetAI(query) {
-            const box = document.getElementById('aiResult');
-            box.style.display = 'block';
-            document.getElementById('aiLoader').style.display = 'block';
-            document.getElementById('aiImageArea').querySelector('img').style.display = 'none';
-            document.getElementById('aiTitle').innerText = `Analyzing Market Data: '${query}'...`;
-            document.getElementById('aiContent').innerText = '';
-            document.getElementById('paginationContainer').innerHTML = '';
+        const countryData = {
+            KR: { region: 'KR', suffix: ' 경제 뉴스', placeholder: '종목, 부동산...', menus: [ {name:'전체', q:'경제 뉴스'}, {name:'주식', q:'주식 시장'}, {name:'부동산', q:'부동산 전망'}, {name:'창업', q:'스타트업'}, {name:'재테크', q:'재테크'}, {name:'환율', q:'환율 전망'} ] },
+            US: { region: 'US', suffix: ' Business News', placeholder: 'Stock, Market...', menus: [ {name:'All', q:'Business News'}, {name:'Stock', q:'Stock Market'}, {name:'Real Estate', q:'Real Estate Market'}, {name:'Startup', q:'Startup Business'}, {name:'Economy', q:'US Economy'}, {name:'Fed', q:'Federal Reserve'} ] },
+            JP: { region: 'JP', suffix: ' ビジネスニュース', placeholder: '株価, 不動産...', menus: [ {name:'総合', q:'経済ニュース'}, {name:'株価', q:'日本株'}, {name:'不動産', q:'不動産投資'}, {name:'起業', q:'スタートアップ'} ] },
+            CN: { region: 'TW', suffix: ' 財經新聞', placeholder: '股票, 房產...', menus: [ {name:'頭條', q:'財經新聞'}, {name:'股票', q:'股市'}, {name:'房產', q:'房地產'}, {name:'創業', q:'創業投資'} ] },
+            VN: { region: 'VN', suffix: ' Kinh tế', placeholder: 'Chứng khoán...', menus: [ {name:'Toàn cảnh', q:'Tin kinh tế'}, {name:'Chứng khoán', q:'Thị trường chứng khoán'}, {name:'Bất động sản', q:'Bất động sản'} ] },
+            TH: { region: 'TH', suffix: ' ธุรกิจ', placeholder: 'หุ้น...', menus: [ {name:'ธุรกิจ', q:'ข่าวธุรกิจ'}, {name:'หุ้น', q:'ตลาดหุ้น'}, {name:'อสังหาฯ', q:'อสังหาริมทรัพย์'} ] },
+            ID: { region: 'ID', suffix: ' Bisnis', placeholder: 'Saham...', menus: [ {name:'Bisnis', q:'Berita Bisnis'}, {name:'Saham', q:'Pasar Saham'}, {name:'Properti', q:'Properti'} ] },
+            IN: { region: 'IN', suffix: ' Business News', placeholder: 'Sensex...', menus: [ {name:'Business', q:'India Business'}, {name:'Market', q:'Stock Market India'}, {name:'Economy', q:'Indian Economy'} ] },
+            FR: { region: 'FR', suffix: ' Économie', placeholder: 'Bourse...', menus: [ {name:'Éco', q:'Actualité Économique'}, {name:'Bourse', q:'Bourse de Paris'}, {name:'Immobilier', q:'Marché Immobilier'} ] },
+            DE: { region: 'DE', suffix: ' Wirtschaft', placeholder: 'Aktien...', menus: [ {name:'Wirtschaft', q:'Wirtschaftsnachrichten'}, {name:'Börse', q:'Aktienmarkt'}, {name:'Immobilien', q:'Immobilienmarkt'} ] },
+            ES: { region: 'ES', suffix: ' Negocios', placeholder: 'Bolsa...', menus: [ {name:'Negocios', q:'Noticias de Negocios'}, {name:'Bolsa', q:'Mercado de Valores'}, {name:'Inmobiliario', q:'Mercado Inmobiliario'} ] },
+            PT: { region: 'BR', suffix: ' Economia', placeholder: 'Ações...', menus: [ {name:'Economia', q:'Notícias de Economia'}, {name:'Bolsa', q:'Bolsa de Valores'}, {name:'Imóveis', q:'Mercado Imobiliário'} ] },
+            RU: { region: 'RU', suffix: ' Бизнес', placeholder: 'Акции...', menus: [ {name:'Бизнес', q:'Новости бизнеса'}, {name:'Акции', q:'Фондовый рынок'}, {name:'Недвижимость', q:'Рынок недвижимости'} ] },
+            SA: { region: 'SA', suffix: ' اقتصاد', placeholder: 'سوق الأسهم...', menus: [ {name:'اقتصاد', q:'أخبار اقتصادية'}, {name:'أسهم', q:'سوق الأسهم'}, {name:'عقارات', q:'سوق العقارات'} ] }
+        };
+
+        window.onload = () => { changeCountry(); };
+
+        function changeCountry() {
+            const select = document.getElementById('langSelect');
+            currentCountry = select.value;
+            const data = countryData[currentCountry];
+            
+            document.getElementById('searchInput').placeholder = data.placeholder;
+
+            const container = document.getElementById('menuList');
+            container.innerHTML = '';
+            
+            data.menus.forEach((item, idx) => {
+                const chip = document.createElement('div');
+                chip.className = `chip ${idx===0 ? 'active':''}`;
+                chip.innerText = item.name;
+                chip.onclick = () => filterCategory(item.q, chip);
+                container.appendChild(chip);
+            });
+            filterCategory(data.menus[0].q, document.querySelector('.chip'));
         }
 
-        function generateAI(query) {
-            const imgTag = document.getElementById('aiGeneratedImg');
-            imgTag.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(query + " stock market financial chart")}`;
-            imgTag.onload = () => { imgTag.style.display = 'block'; };
-
-            setTimeout(() => {
-                document.getElementById('aiLoader').style.display = 'none';
-                document.getElementById('aiTitle').innerText = `AI Market Insight: ${query}`;
-                
-                let text = "";
-                if (currentLang === 'ko') text = `<strong>📊 시장 분석</strong><br>"${query}" 관련 자금 흐름이 감지되었습니다. 월가 전문가들은 변동성에 주의하며 포트폴리오를 조정할 것을 권장합니다.`;
-                else if (currentLang === 'en') text = `<strong>📊 Market Analysis</strong><br>Significant capital flow detected regarding "${query}". Wall St. experts suggest adjusting portfolios amid volatility.`;
-                else if (currentLang === 'jp') text = `<strong>📊 市場分析</strong><br>"${query}" 関連の資金の流れが感知されました。専門家は変動性に注意し、ポートフォリオの調整を推奨しています。`;
-                else if (currentLang === 'zh') text = `<strong>📊 市场分析</strong><br>检测到关于 "${query}" 的资金流向。华尔街专家建议在波动中调整投资组合。`;
-                
-                document.getElementById('aiContent').innerHTML = text;
-            }, 1500);
+        function handleSearch(e) { if (e.key === 'Enter') triggerSearch(); }
+        function triggerSearch() {
+            const query = document.getElementById('searchInput').value;
+            if(query) searchYouTube(query);
         }
 
-        async function searchYouTubeReal(query) {
+        function filterCategory(keyword, el) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            if(el) el.classList.add('active');
+            const data = countryData[currentCountry];
+            searchYouTube(keyword);
+        }
+
+        async function searchYouTube(query) {
             try {
-                const url = `${API_URL}?part=snippet&maxResults=12&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
+                const dataConfig = countryData[currentCountry];
+                let finalQuery = query;
+                if(!finalQuery.includes(dataConfig.suffix.trim())) { finalQuery += dataConfig.suffix; }
+
+                const url = `${API_URL}?part=snippet&maxResults=15&q=${encodeURIComponent(finalQuery)}&type=video&regionCode=${dataConfig.region}&key=${YOUTUBE_API_KEY}`;
                 const response = await fetch(url);
                 const data = await response.json();
-                if (data.error) throw new Error(data.error.message);
-                renderFeed(data.items, true); 
-            } catch (error) {
-                console.warn("API Error:", error);
-                renderMockData(query);
-            }
+                if (data.items) renderFeed(data.items);
+            } catch (e) { console.error(e); }
         }
 
-        // --- 2. 가상 데이터 (Business Topics) ---
-        function generateVirtualData() {
-            const topics = {
-                ko: ['나스닥 급등', '연준 금리 발표', '비트코인 시황', '부동산 전망', '유가 변동', '삼성전자 실적', '환율 정보', 'CEO 인터뷰'],
-                en: ['NASDAQ Surge', 'Fed Interest Rate', 'Bitcoin Market', 'Real Estate Outlook', 'Oil Prices', 'Samsung Earnings', 'Exchange Rates', 'CEO Interview'],
-                jp: ['ナスダック急騰', 'FRB金利発表', 'ビットコイン市況', '不動産見通し', '原油価格変動', 'サムスン電子実績', '為替情報', 'CEOインタビュー'],
-                zh: ['纳斯达克飙升', '美联储利率', '比特币行情', '房地产展望', '油价波动', '三星电子业绩', '汇率信息', 'CEO访谈']
-            };
-            const channels = ['CNBC', 'Bloomberg', 'WSJ', 'Financial Times', 'Yahoo Finance', 'Forbes', 'Reuters'];
-            
-            const generated = [];
-            for (let i = 1; i <= TOTAL_ITEMS; i++) {
-                const langKey = currentLang;
-                const topic = topics[langKey][Math.floor(Math.random() * topics[langKey].length)];
-                const channel = channels[Math.floor(Math.random() * channels.length)];
-                
-                generated.push({
-                    videoId: 'HK6y8DAPN_0',
-                    snippet: {
-                        title: currentLang === 'ko' ? `[경제 속보] ${topic} : 시장 분석 리포트 #${i}` :
-                               currentLang === 'zh' ? `[财经快讯] ${topic} : 市场分析报告 #${i}` :
-                               `[Market News] ${topic} : Analysis Report #${i}`,
-                        description: `API quota saving mode. Displaying virtual business data.`,
-                        thumbnails: { medium: { url: `https://picsum.photos/600/400?random=${i + 200}` } },
-                        channelTitle: channel,
-                        publishedAt: new Date().toISOString()
-                    }
-                });
-            }
-            return generated;
-        }
-
-        function initData() {
-            allData = generateVirtualData();
-            renderPage(1);
-            showNotification();
-            loadHistory();
-        }
-
-        function changeLanguage() {
-            currentLang = document.getElementById('langSelect').value;
-            const searchInput = document.getElementById('searchInput');
-            
-            if (currentLang === 'ko') searchInput.placeholder = "주식, 경제, 금리 검색...";
-            else if (currentLang === 'jp') searchInput.placeholder = "株式, 経済, 金利 検索...";
-            else if (currentLang === 'zh') searchInput.placeholder = "搜索 股票, 经济, 利率...";
-            else searchInput.placeholder = "Search Stocks, Economy...";
-
-            updateData();
-        }
-
-        function updateData() {
-            document.getElementById('bellIcon').classList.remove('alert');
-            document.getElementById('notiDot').style.display = 'none';
-            document.getElementById('feedContainer').innerHTML = `<div style="text-align:center; padding:100px; grid-column:1/-1;"><i class="fas fa-chart-bar fa-spin fa-2x"></i><br>Market Updating...</div>`;
-            setTimeout(() => {
-                allData = generateVirtualData();
-                renderPage(1);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 600);
-        }
-
-        function showNotification() {
-            document.getElementById('bellIcon').classList.add('alert');
-            document.getElementById('notiDot').style.display = 'block';
-        }
-
-        // --- 3. 렌더링 & 페이지네이션 ---
-        function renderPage(page) {
-            currentPage = page;
-            const start = (page - 1) * ITEMS_PER_PAGE;
-            const end = start + ITEMS_PER_PAGE;
-            const itemsToShow = allData.slice(start, end);
-            renderFeed(itemsToShow, false);
-            renderPaginationBtns();
-        }
-
-        function renderPaginationBtns() {
-            const container = document.getElementById('paginationContainer');
-            container.innerHTML = '';
-            const totalPages = Math.ceil(allData.length / ITEMS_PER_PAGE);
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = document.createElement('div');
-                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-                btn.innerText = i;
-                btn.onclick = () => { renderPage(i); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-                container.appendChild(btn);
-            }
-        }
-
-        function renderFeed(items, isRealApi = false) {
-            const container = document.getElementById('feedContainer');
-            container.innerHTML = ''; 
+        function renderFeed(items) {
+            const list = document.getElementById('feedList');
+            list.innerHTML = '';
             items.forEach(item => {
-                const videoId = isRealApi ? item.id.videoId : item.videoId;
-                const snippet = isRealApi ? item.snippet : item.snippet;
-                const thumb = snippet.thumbnails.medium.url;
-                const title = snippet.title;
-                const channel = snippet.channelTitle;
+                const snip = item.snippet;
+                const vid = item.id.videoId;
+                const thumb = snip.thumbnails.high ? snip.thumbnails.high.url : snip.thumbnails.medium.url;
 
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.onclick = () => playVideo(videoId, title, channel, thumb);
-                card.innerHTML = `
-                    <div class="card-header">
-                        <img src="https://ui-avatars.com/api/?name=${channel.substring(0,2)}&background=1e3a8a&color=fff" class="source-icon">
-                        <div class="source-name">${channel}</div>
-                    </div>
-                    <div class="card-media">
-                        <img src="${thumb}" alt="Thumbnail">
-                        <i class="fas fa-play-circle" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:50px; color:rgba(255,255,255,0.9);"></i>
+                const div = document.createElement('div');
+                div.className = 'news-card';
+                div.onclick = () => playVideo(vid, snip.title);
+                div.innerHTML = `
+                    <div class="thumb-box">
+                        <img src="${thumb}" class="thumb-img">
+                        <div class="play-icon-overlay"><i class="fas fa-play-circle"></i></div>
                     </div>
                     <div class="card-body">
-                        <div class="card-title">${title}</div>
-                        <div class="card-desc">${snippet.description}</div>
-                        <div class="card-actions">
-                            <i class="far fa-heart"></i><i class="far fa-comment"></i><div style="margin-left:auto;"><i class="far fa-bookmark"></i></div>
+                        <div class="card-title">${snip.title}</div>
+                        <div class="card-meta">
+                            <span>${snip.channelTitle}</span>
+                            <span>${snip.publishTime.substring(0,10)}</span>
                         </div>
                     </div>
                 `;
-                container.appendChild(card);
+                list.appendChild(div);
             });
         }
 
-        function renderMockData(query) {
-            allData = generateVirtualData();
-            renderPage(1);
-        }
+        function playVideo(vid, title) {
+            const playerBox = document.getElementById('video-container');
+            const frameArea = document.getElementById('playerFrameArea');
+            const contentArea = document.getElementById('mainFeed');
 
-        // --- 4. 플레이어 & 히스토리 ---
-        function playVideo(videoId, title, channel, thumb) {
-            const player = document.getElementById('fixedPlayer');
-            const frame = document.getElementById('playerFrameArea');
-            // Business Header Offset (Ticker + Header)
-            const offsetHeight = 185; 
+            isPlayerActive = true;
+            document.getElementById('playingTitle').innerText = title;
+            playerBox.style.display = 'block';
 
-            player.style.display = 'block';
-            player.classList.remove('sticky-top');
-            player.style.top = (offsetHeight + 20) + 'px';
+            frameArea.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1&playsinline=1&controls=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 
-            frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            
+            contentArea.classList.add('has-video');
+            contentArea.style.marginTop = '0';
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            if(title && channel) {
-                saveToHistory({ videoId, title, channel, thumb });
-            }
         }
 
         function closePlayer() {
-            const player = document.getElementById('fixedPlayer');
+            isPlayerActive = false;
+            const playerBox = document.getElementById('video-container');
+            const contentArea = document.getElementById('mainFeed');
+            playerBox.style.display = 'none';
+            playerBox.classList.remove('sticky');
             document.getElementById('playerFrameArea').innerHTML = '';
-            player.style.display = 'none';
-            player.classList.remove('sticky-top');
-        }
-
-        function saveToHistory(item) {
-            let history = JSON.parse(localStorage.getItem('watchHistory')) || [];
-            history = history.filter(h => h.videoId !== item.videoId);
-            history.unshift(item);
-            if(history.length > 20) history.pop();
-            localStorage.setItem('watchHistory', JSON.stringify(history));
-            renderHistory();
-        }
-
-        function loadHistory() {
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('watchHistory')) || [];
-            const container = document.getElementById('historyList');
-            container.innerHTML = '';
-
-            if (history.length === 0) {
-                container.innerHTML = '<div class="empty-history">최근 본 영상이 없습니다.</div>';
-                return;
-            }
-
-            history.forEach(h => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.onclick = () => playVideo(h.videoId);
-                div.innerHTML = `
-                    <img src="${h.thumb}" class="h-thumb">
-                    <div class="h-info">
-                        <div class="h-title">${h.title}</div>
-                        <div class="h-channel">${h.channel}</div>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function clearHistory() {
-            localStorage.removeItem('watchHistory');
-            renderHistory();
+            contentArea.classList.remove('has-video');
+            contentArea.style.marginTop = '145px';
         }
 
         window.addEventListener('scroll', () => {
-            const player = document.getElementById('fixedPlayer');
-            if(player.style.display !== 'block') return;
-            // Ticker 높이(30px) 고려
-            if (window.scrollY > 100) player.classList.add('sticky-top');
-            else if (window.scrollY < 10) player.classList.remove('sticky-top');
+            if (!isPlayerActive) return;
+            const playerBox = document.getElementById('video-container');
+            if (window.scrollY > 50) { playerBox.classList.add('sticky'); } 
+            else { playerBox.classList.remove('sticky'); }
         });
-
-        const TWELVE_HOURS = 12 * 60 * 60 * 1000;
-        setInterval(() => { initData(); }, TWELVE_HOURS);
-
-        initData();
     </script>
 </body>
 </html>
